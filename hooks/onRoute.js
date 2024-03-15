@@ -1,17 +1,22 @@
 /** @type{import('fastify').FastifyPluginAsync<>} */
+import {extractUser, logMe} from './functions/index.js'
+
 export default async function onRouteHook(app, options) {
-    const logMe = async (request, reply) => {
-        request.log.info(`Request for url: ${request.url}.`);
-    };
+
+    
 
     app.addHook('onRoute', (routeOptions) => {
+        if(routeOptions.onRequest && !Array.isArray(routeOptions.onRequest)){
+            routeOptions.onRequest = [routeOptions.onRequest];
+        }else{
+            routeOptions.onRequest = [];
+        }
+
         if(routeOptions.config?.logMe){
-            if(routeOptions.onRequest && !Array.isArray(routeOptions.onRequest)){
-                routeOptions.onRequest = [routeOptions.onRequest];
-            }else{
-                routeOptions.onRequest = [];
-            }
-            routeOptions.onRequest.push(logMe);
+            routeOptions.onRequest.push(logMe(app));
+        }
+        if(routeOptions.config?.requireAuthentication){
+            routeOptions.onRequest.push(extractUser(app));
         }
     });
 }

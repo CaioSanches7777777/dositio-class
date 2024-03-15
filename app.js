@@ -1,29 +1,37 @@
 import fastify from 'fastify';
 import createError from '@fastify/error';
 import autoload from '@fastify/autoload';
+import mongodb from '@fastify/mongodb';
 import jwt from '@fastify/jwt';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 const MyCustomError = createError('MyCustomError', 'Something stranged happened.', 501);
 
 export async function build(opts){
     const app = fastify(opts);
 
-    await app.register(jwt, {
+    await app.register(jwt, { //chave secreta
         secret: opts.jwt_secret
     });
 
-    await app.register(autoload, {
-        dir: join(__dirname, 'hooks'),
-        encapsulate: false
+    await app.register(mongodb, {
+        url: 'mongodb://localhost:27017/dositio'
     });
 
     await app.register(autoload, {
-        dir: join(__dirname, 'routes')
+        dir: path.join(__dirname, 'hooks'),
+        encapsulate: false,
+        ignoreFilter:(path) => {
+            return path.includes('functions');
+        }
+    });
+
+    await app.register(autoload, {
+        dir: path.join(__dirname, 'routes')
     });
 
 

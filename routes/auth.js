@@ -6,7 +6,8 @@ export default async function auth(app, options) {
         request.log.info(`Login for user ${user.username}`);
         //check login details
         delete user.password;
-        const token = app.jwt.sign(user);
-        return token;
+        return {
+            'x-access-token' : app.jwt.sign(user)
+        }
     });
 }
