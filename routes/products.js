@@ -13,7 +13,7 @@ export default async function products(app, options) {
             }
         }, 
         async (request, reply) => {
-            request.log.info(products);
+            //request.log.info(products);
         return await products.find().toArray();
     });
 
@@ -31,9 +31,12 @@ export default async function products(app, options) {
         }
     }, async (request, reply) => {
         let product = request.body;
-        request.log.info(`Including product ${product.name}.`);
-        return product;
+
+        let result = await products.insertOne(product);
+
+        return result;
     });
+
 
     app.get('/products/:id', async (request, reply) => {
         app.log.info('Produto requisitado> ' + request.params.id);
