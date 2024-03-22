@@ -5,9 +5,25 @@ import mongodb from '@fastify/mongodb';
 import jwt from '@fastify/jwt';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import  dotenv  from 'dotenv';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+dotenv.config();
+
+export const options = {
+    stage: process.env.STAGE,
+    port: process.env.PORT,
+    host: process.env.HOST,
+    logger: process.env.STAGE == 'dev' ? {transport: {target: 'pino-pretty'}}: true,
+    jwt_secret: process.env.JWT_SECRET,
+    db_url: process.env.DB_URL
+ };
+
+//options.logger = process.stdout.isTTY ? { transport : { target: 'pino-pretty'} } : true;
+//options.jwt_secret = process.env.JWT_SECRET || 'Abcd@1234';
+
+
+//const __filename = fileURLToPath(import.meta.url);
+//const __dirname = path.dirname(__filename);
 
 const MyCustomError = createError('MyCustomError', 'Something stranged happened.', 501);
 
@@ -19,7 +35,7 @@ export async function build(opts){
     });
 
     await app.register(mongodb, {
-        url: 'mongodb://localhost:27017/dositio'
+        url: opts.db_url
     });
 
     await app.register(autoload, {

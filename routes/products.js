@@ -1,5 +1,6 @@
 /** @type{import('fastify').FastifyPluginAsync<>} */
 import createError from '@fastify/error';
+import { config } from 'dotenv';
 export default async function products(app, options) {
     const InvalidProductError = createError('InvalidProductError', 'Produto Inválido.', 400);
 
@@ -28,6 +29,8 @@ export default async function products(app, options) {
                 },
                 required: ['name', 'qtd']
             }
+        },config:{
+            requireAuthentication: true
         }
     }, async (request, reply) => {
         let product = request.body;
@@ -44,13 +47,21 @@ export default async function products(app, options) {
         return product;
     });
     
-    app.delete('/products/:id', async (request, reply) => {
+    app.delete('/products/:id',{
+        config:{
+            requireAuthentication: true
+        }
+        }, async (request, reply) => {
         let id = request.params.id;
         await products.deleteOne({_id: new app.mongo.ObjectId(id)});
         return reply.code(204).send();
     });
 
-    app.put('/products/:id', async (request,reply) => {
+    app.put('/products/:id', {
+        config:{
+            requireAuthentication: true
+        }
+    }, async (request,reply) => {
         let id = request.params.id;
         let product = request.body;
 
