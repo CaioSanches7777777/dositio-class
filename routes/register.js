@@ -10,7 +10,7 @@ export default async function products(app, options) {
                 properties: {
                     id: { type: 'integer' },
                     username: { type: 'string' },
-                    password: { type: 'string' }
+                    password: { type: 'string' } //criptografar
                 },
                 required: ['username', 'password']
             }
