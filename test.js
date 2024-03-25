@@ -10,7 +10,7 @@ describe('###Tests for Server Configuration', async(t) => {
             await app.close();
         });
     
-        deepEqual(options.stage,'test');
+        deepEqual(options.stage,'test'); //'dev' no .env 
         deepEqual(options.port,'3000');
         deepEqual(options.host,'1270.0.0.1');
         deepEqual(options.jwt_secret,'Abcd@1234');
@@ -35,6 +35,20 @@ describe('###Tests for Unauthenticated routes', async(t) => {
             });
 
             equal(response.statusCode, 200);
+        });
+
+        test('# GET /categories', async(t)=>{
+            const app = await build(options);
+            t.after(async()=>{
+                await app.close();
+            });
+
+            const response = await app.inject({
+                method:'GET',
+                url:'/categories'
+            });
+
+            equal(response.statusCode,200);
         });
     });
 
