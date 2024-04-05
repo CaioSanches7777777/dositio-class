@@ -22,8 +22,8 @@ export const options = {
 //options.jwt_secret = process.env.JWT_SECRET || 'Abcd@1234';
 
 
-//const __filename = fileURLToPath(import.meta.url);
-//const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const MyCustomError = createError('MyCustomError', 'Something stranged happened.', 501);
 
