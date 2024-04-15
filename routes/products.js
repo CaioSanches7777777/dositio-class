@@ -25,9 +25,10 @@ export default async function products(app, options) {
                 properties: {
                     id: { type: 'integer' },
                     name: { type: 'string' },
-                    qtd: { type: 'integer' }
+                    qtd: { type: 'integer' },
+                    category: { type: 'string' }
                 },
-                required: ['name', 'qtd']
+                required: ['name', 'qtd', 'category']
             }
         },config:{
             requireAuthentication: true
@@ -68,7 +69,8 @@ export default async function products(app, options) {
         await products.updateOne({_id: new app.mongo.ObjectId(id)}, {
             $set:{
                 name:product.name,
-                qtd: product.qtd
+                qtd: product.qtd,
+                category: product.category
             }
         });
 

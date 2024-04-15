@@ -5,6 +5,7 @@ import products from './products.js';
 export default async function categories(app, options) {
 
     const categories = app.mongo.db.collection('categories');
+    const products = app.mongo.db.collection('products');
 
     app.get('/categories', 
         {   
@@ -25,18 +26,20 @@ export default async function categories(app, options) {
                 type: 'object',
                 properties: {
                     id: { type: 'integer' },
-                    name: { type: 'string' }
-                    
+                    name: { type: 'string' },
+                    img_url: {type: 'string'}
                 },
-                required: ['name']
+                required: ['name', 'img_url']
             }
         },config:{
-            requireAuthentication: true
+            requireAuthentication: true,
+            checkAdmin: true
         }
     }, async (request, reply) => {
-        let categorie = request.body;
-        request.log.info(`Including categorie ${categorie.name}.`);
-        return categorie;
+        let category = request.body;
+        let result = await categories.insertOne(category);
+        request.log.info(`Including category ${category.name}.`);
+        return reply.code(201).send();
     });
     /*
     app.get('/categories/:id/products', async (request, reply) => {
@@ -46,17 +49,24 @@ export default async function categories(app, options) {
     */
     app.get('/categories/:id/products', async (request, reply) => {
         let id = request.params.id;
-        let categorie = await categories.findOne({_id: new app.mongo.ObjectId(id)});
-        return categorie;
+        let category = await categories.findOne({_id: new app.mongo.ObjectId(id)});
+        let categoryName = category.name;
+        let productsCategory = await products.find({category: categoryName}).toArray();
+        return productsCategory; 
     });
 
-    
+    app.get('/categories/:id', async (request, reply) => {
+        let id = request.params.id;
+        let category = await categories.findOne({_id: new app.mongo.ObjectId(id)});
+        return category;
+    });
+
     app.delete('/categories/:id',{
         config:{
             requireAuthentication: true
         }}, async (request, reply) => {
         let id = request.params.id;
-        await products.deleteOne({_id: new app.mongo.ObjectId(id)});
+        await categories.deleteOne({_id: new app.mongo.ObjectId(id)});
         return reply.code(204).send();
     });
     
@@ -67,12 +77,12 @@ export default async function categories(app, options) {
         }
     }, async (request,reply) => {
         let id = request.params.id;
-        let categorie = request.body;
+        let category = request.body;
 
         await categories.updateOne({_id: new app.mongo.ObjectId(id)}, {
             $set:{
-                name:categorie.name,
-                qtd: categorie.qtd
+                name:category.name,
+                img_url:category.img_url
             }
         });
 
