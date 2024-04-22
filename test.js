@@ -12,7 +12,7 @@ describe('###Tests for Server Configuration', async(t) => {
     
         deepEqual(options.stage,'test'); //'dev' no .env 
         deepEqual(options.port,'3000');
-        deepEqual(options.host,'127.0.0.1'); //pode ser '1270.0.0.1'
+        deepEqual(options.host,'127.0.0.1'); //talvez seja '1270.0.0.1'
         deepEqual(options.jwt_secret,'Abcd@1234');
         deepEqual(options.db_url,'mongodb://localhost:27017/dositio');
 

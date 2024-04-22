@@ -23,3 +23,16 @@ export const ALREADY_EXISTS = createError(
     'This resource already exists on the data base.',
     412
 )
+
+export const ACCESS_UNAUHORIZED = createError(
+  'ACCESS_UNAUHORIZED',
+  'Access unauthorized.',
+  401
+)
+
+export const USER_UNREGISTERED = createError(
+  'USER_UNREGISTERED',
+  'Unregistered user access denied.',
+  401
+)
+

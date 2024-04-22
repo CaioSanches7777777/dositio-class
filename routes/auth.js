@@ -1,3 +1,5 @@
+import { ACCESS_UNAUHORIZED, USER_UNREGISTERED } from '../libs/errors.js';
+
 /** @type{import('fastify').FastifyPluginAsync<>} */
 export default async function auth(app, options) {
     
@@ -15,7 +17,7 @@ export default async function auth(app, options) {
     */
     
     
-    const auth = app.mongo.db.collection('auth');
+    const auth = app.mongo.db.collection('registerUser');
 
     app.post('/auth', {schema: {
         body: {
@@ -28,8 +30,12 @@ export default async function auth(app, options) {
             required: ['username', 'password']
         }
         }},
-        (request, reply) => {
+        async (request, reply) => {
         let user = request.body;
+        let searchedUser = await auth.findOne({username: user.username})
+        if(searchedUser.password != user.password){
+            throw new ACCESS_UNAUHORIZED()
+        }
         request.log.info(`Login for user ${user.username}`);
         //check login details
         delete user.password;

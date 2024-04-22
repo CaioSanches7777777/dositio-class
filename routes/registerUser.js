@@ -16,7 +16,7 @@ export default async function registerUser(app, options) {
             //request.log.info(products);
         return await registerUser.find().toArray();
     });
-
+    
     app.post('/registerUser', {
         schema: {
             body: {
