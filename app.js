@@ -5,8 +5,11 @@ import mongodb from '@fastify/mongodb';
 import jwt from '@fastify/jwt';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import  dotenv  from 'dotenv';
-import cors from "@fastify/cors"
+import dotenv from 'dotenv';
+import multipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
+import cors from '@fastify/cors';
+
 
 dotenv.config();
 
@@ -14,13 +17,10 @@ export const options = {
     stage: process.env.STAGE,
     port: process.env.PORT,
     host: process.env.HOST,
-    logger: process.env.STAGE == 'dev' ? {transport: {target: 'pino-pretty'}}: true,
+    logger: process.env.STAGE === 'dev' ? { transport : { target: 'pino-pretty'} } : false,
     jwt_secret: process.env.JWT_SECRET,
     db_url: process.env.DB_URL
- };
-
-//options.logger = process.stdout.isTTY ? { transport : { target: 'pino-pretty'} } : true;
-//options.jwt_secret = process.env.JWT_SECRET || 'Abcd@1234';
+};
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,18 +31,18 @@ const MyCustomError = createError('MyCustomError', 'Something stranged happened.
 export async function build(opts){
     const app = fastify(opts);
 
-    await app.register(cors, {
+    await app.register(cors, { 
         origin: true
     });
 
-    /*
+    await app.register(multipart);
+
     await app.register(fastifyStatic, {
         root: path.join(__dirname, 'public'),
         prefix: '/public/'
     });
-    */
-    
-    await app.register(jwt, { //chave secreta
+
+    await app.register(jwt, {
         secret: opts.jwt_secret
     });
 
@@ -53,7 +53,7 @@ export async function build(opts){
     await app.register(autoload, {
         dir: path.join(__dirname, 'hooks'),
         encapsulate: false,
-        ignoreFilter:(path) => {
+        ignoreFilter: (path) =>{
             return path.includes('functions');
         }
     });
